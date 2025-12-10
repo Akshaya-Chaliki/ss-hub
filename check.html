@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Smart Study Hub — Admin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+/* --- 🎨 Admin Panel Theme Variables --- */
+:root {
+    /* Dark Background */
+    --bg-dark-blue: #1C274B; 
+    --bg-dark-purple: #2A1C4B; 
+
+    /* Primary UI Colors (White/Light for Cards) */
+    --card-bg-light: rgba(255, 255, 255, 0.9); /* Frosted glass look */
+    --primary-dark: #111827; /* Dark text for cards */
+    --text-muted: #6B7280;
+
+    /* Accent Colors */
+    --accent-admin: #0087c0; /* Main Admin/Primary Blue */
+    --accent-admin-dark: #005a8d;
+    --accent-secondary: #8B5CF6; /* Secondary accent (Purple) */
+    --accent-secondary-dark: #6D28D9; 
+
+    /* Shadows */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --shadow-lift: 0 15px 40px rgba(0, 0, 0, 0.4);
+
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    /* Dark Gradient Background */
+    background: linear-gradient(145deg, var(--bg-dark-blue) 0%, var(--bg-dark-purple) 100%);
+    margin: 0;
+    color: var(--primary-dark);
+    min-height: 100vh;
+}
+
+header {
+    /* Header uses the secondary accent color on a light background */
+    background: var(--card-bg-light);
+    color: var(--accent-admin);
+    padding: 25px 18px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 2.2em;
+    letter-spacing: 1.5px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px);
+    margin-bottom: 25px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto 22px auto;
+    padding: 0 18px 18px 18px;
+}
+
+.card {
+    /* Frosted Glass Card Appearance */
+    background: var(--card-bg-light);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 25px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px; /* Thicker accent bar */
+    background: linear-gradient(90deg, var(--accent-admin), var(--accent-secondary));
+    z-index: 1;
+}
+
+.select-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.select-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.select-header strong {
+    font-size: 1.5em; /* Larger header */
+    color: var(--primary-dark);
+    font-weight: 900;
+}
+
+select, input {
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9); /* Opaque white inputs */
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    flex: 1;
+    min-width: 140px;
+    color: var(--primary-dark);
+}
+
+select:focus, input:focus {
+    outline: 3px solid var(--accent-admin);
+    box-shadow: 0 0 15px rgba(0, 135, 192, 0.4);
+    transform: scale(1.01);
+}
+
+button.primary {
+    /* Primary Button: White with blue text */
+    background: var(--card-bg-light);
+    color: var(--accent-admin);
+    border: 2px solid var(--accent-admin);
+    padding: 14px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    transition: all 0.4s ease;
+}
+
+button.primary:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-lift);
+    background: var(--accent-admin);
+    color: white;
+}
+
+/* --- SUBJECT & CHAPTER BLOCKS --- */
+.blocks, .chapter-list, .notes-list {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Align left */
+    margin-top: 18px;
+}
+
+.subject-block {
+    min-width: 220px;
+    padding: 25px;
+    border-radius: 16px;
+    /* Dark gradient background for visual pop */
+    background: linear-gradient(135deg, var(--accent-admin), var(--accent-admin-dark));
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    font-size: 1.1em;
+}
+
+.subject-block:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+}
+
+.chapter-card {
+    min-width: 180px;
+    padding: 20px;
+    border-radius: 16px;
+    /* Secondary accent color (Purple) */
+    background: linear-gradient(135deg, var(--accent-secondary), var(--accent-secondary-dark));
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.chapter-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.chapter-card .title {
+    font-weight: 900;
+    font-size: 1.1em;
+}
+
+/* --- NOTES LIST --- */
+.note-item {
+    background: rgba(255, 255, 255, 0.7); /* Slightly translucent note cards */
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-width: 280px;
+    max-width: 320px;
+    flex-grow: 1;
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--accent-admin);
+}
+
+.note-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+.note-title {
+    font-weight: 900;
+    margin-bottom: 8px;
+    font-size: 1.2em;
+    color: var(--primary-dark);
+}
+
+.note-desc {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.small {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+a.link {
+    color: var(--accent-admin);
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+a.link:hover {
+    color: var(--accent-admin-dark);
+    text-decoration: underline;
+}
+
+/* --- MODAL --- */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: var(--card-bg-light);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    position: relative;
+}
+
+.modal-card h3 {
+    margin: 0 0 20px 0;
+    color: var(--primary-dark);
+    font-size: 1.6em;
+    font-weight: 900;
+}
+
+/* Modal Buttons */
+#cancelAdd {
+    background: #eee; 
+    color: #666; 
+    border: none; 
+    padding: 12px 20px; 
+    border-radius: 12px; 
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+#cancelAdd:hover {
+    background: #ddd;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .select-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    select, input, button.primary {
+        width: 100%;
+        max-width: 400px;
+    }
+    .blocks, .chapter-list, .notes-list {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        font-size: 1.6em;
+        letter-spacing: 1px;
+    }
+    .subject-block, .chapter-card, .note-item {
+        min-width: 100%;
+        max-width: none;
+        width: 100%;
+    }
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+
+<header>Smart Study Hub — Admin</header>
+
+<div class="container">
+
+    <div class="card" id="selectionCard">
+    <div class="select-header">
+      <strong>Select Campus, Branch, Semester</strong>
+    </div>
+
+    <div class="select-row">
+      <select id="campusSelect">
+        <option value="">Select Campus</option>
+        <option value="ACET">ACET</option>
+        <option value="AUS">AUS</option>
+      </select>
+      <select id="branchSelect">
+        <option value="">Select Branch</option>
+        <option value="CSE">CSE</option>
+        <option value="IT">IT</option>
+        <option value="DS">DS</option>
+        <option value="AIML">AIML</option>
+      </select>
+      <select id="semSelect">
+        <option value="">Select Sem</option>
+        <option>1</option><option>2</option><option>3</option><option>4</option>
+        <option>5</option><option>6</option><option>7</option><option>8</option>
+      </select>
+      <button class="primary" id="enterBtn">Enter</button>
+    </div>
+  </div>
+
+    <div id="mainArea" class="card" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong id="ctxTitle" style="color:var(--primary-dark);font-size:1.4em">—</strong>
+        <div class="small" id="ctxSub">Admin Mode</div>
+      </div>
+    </div>
+
+        <div id="subjectsArea" style="margin-top:20px;">
+      <div style="text-align:left;margin-bottom:12px;border-bottom: 2px solid #eee;padding-bottom: 5px;"><strong style="color:var(--accent-admin)">Subjects for Semester</strong></div>
+      <div class="blocks" id="subjectsBlocks"></div>
+    </div>
+
+        <div id="chaptersArea" style="display:none;margin-top:30px">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom: 2px solid #eee;padding-bottom: 5px;">
+        <div><strong id="subjectNameHeader" style="color:var(--accent-secondary);font-size:1.3em;"></strong></div>
+      </div>
+      <div class="chapter-list" id="chaptersList"></div>
+    </div>
+
+        <div id="notesArea" style="display:none;margin-top:30px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="chapterHeader" style="margin:0; color: var(--primary-dark); font-weight: 900; font-size: 1.5em;"></h3>
+        <button class="primary" id="addNoteBtn">+ Add Note</button>
+      </div>
+      <div class="notes-list" id="notesList"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="addModal" class="modal" style="display:none">
+  <div class="modal-card">
+    <h3>Upload New Note (Admin Link)</h3>
+    <input id="noteTitle" placeholder="Title (e.g., Quantum Physics - Slide 1)" style="width:100%;margin-bottom:12px" />
+    <input id="noteDesc" placeholder="Description (e.g., Detailed notes on wave functions)" style="width:100%;margin-bottom:12px" />
+    <input id="noteLink" placeholder="Public Drive/Web link (REQUIRED)" style="width:100%;margin-bottom:16px" />
+
+    <div style="display:flex;gap:12px;justify-content:flex-end">
+      <button id="cancelAdd">Cancel</button>
+      <button id="confirmAdd" class="primary">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyAnU8zS0ky1zzgkc1kPkZDcv7uI8s29Ngc",
+  authDomain: "ss-hub-e62c8.firebaseapp.com",
+  projectId: "ss-hub-e62c8",
+  storageBucket: "ss-hub-e62c8.firebasestorage.app",
+  messagingSenderId: "301529043206",
+  appId: "1:301529043206:web:33e140d591951a14c00e87"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let campus='', branch='', sem='', subjects=[], currentSubject=null, currentChapter=null;
+
+/* ELEMENTS */
+const enterBtn=document.getElementById('enterBtn');
+const mainArea=document.getElementById('mainArea');
+const subjectsBlocks=document.getElementById('subjectsBlocks');
+const chaptersArea=document.getElementById('chaptersArea');
+const chaptersList=document.getElementById('chaptersList');
+const chaptersHeader=document.getElementById('subjectNameHeader');
+const notesArea=document.getElementById('notesArea');
+const notesList=document.getElementById('notesList');
+const addNoteBtn=document.getElementById('addNoteBtn');
+const addModal=document.getElementById('addModal');
+const noteTitle=document.getElementById('noteTitle');
+const noteDesc=document.getElementById('noteDesc');
+const noteLink=document.getElementById('noteLink');
+const confirmAdd=document.getElementById('confirmAdd');
+const cancelAdd=document.getElementById('cancelAdd');
+
+/* ENTER */
+enterBtn.addEventListener('click', async ()=>{
+  campus = document.getElementById('campusSelect').value;
+  branch = document.getElementById('branchSelect').value;
+  sem = String(document.getElementById('semSelect').value);
+
+  if(!campus || !branch || !sem){
+    alert('Select campus, branch and semester');
+    return;
+  }
+
+  mainArea.style.display='block';
+  document.getElementById('ctxTitle').textContent = `${campus} • ${branch} • Sem ${sem}`;
+
+  const docId = `${campus}-${branch}-${sem}`;
+  const docSnap = await db.collection('StudentNotes').doc(docId).get();
+
+  if(!docSnap.exists){ alert(`Structure missing: ${docId}`); return; }
+
+  subjects = docSnap.data().subjects || [];
+  renderSubjects();
+});
+
+function renderSubjects(){
+  chaptersArea.style.display='none';
+  notesArea.style.display='none';
+  subjectsBlocks.innerHTML='';
+
+  subjects.forEach((s,idx)=>{
+    const sb = document.createElement('div');
+    sb.className='subject-block';
+    sb.textContent = s.name;
+    sb.onclick = ()=>openSubject(idx);
+    subjectsBlocks.appendChild(sb);
+  });
+}
+
+function openSubject(index){
+  currentSubject = subjects[index].name;
+  const chapters = subjects[index].chapters || [];
+
+  chaptersArea.style.display='block';
+  notesArea.style.display='none';
+  chaptersList.innerHTML='';
+  chaptersHeader.textContent = `Chapters in ${currentSubject}`;
+
+  chapters.forEach(ch=>{
+    const c = document.createElement('div');
+    c.className='chapter-card';
+    c.innerHTML = `<div class="title">${ch}</div>`;
+    c.onclick = ()=>openChapter(ch);
+    chaptersList.appendChild(c);
+  });
+}
+
+async function openChapter(chapterName){
+  currentChapter = chapterName;
+  notesArea.style.display='block';
+  document.getElementById('chapterHeader').textContent = currentChapter;
+  notesList.innerHTML='<div style="color:var(--text-muted); padding:20px;">Loading notes...</div>';
+
+  try{
+    const snap = await db.collection('NotesUploads')
+      .where('campus','==',campus)
+      .where('branch','==',branch)
+      .where('semester','==',String(sem))
+      .where('subject','==',currentSubject)
+      .where('chapter','==',currentChapter)
+      .get();
+
+    notesList.innerHTML='';
+
+    if(snap.empty){
+      notesList.innerHTML='<div class="small" style="width:100%;text-align:center;padding:20px;color:var(--text-muted);">No notes uploaded yet.</div>';
+      return;
+    }
+
+    const docs = [];
+    snap.forEach(d=>docs.push(d.data()));
+
+    docs.sort((a,b)=>b.uploadedAt.seconds - a.uploadedAt.seconds);
+
+    docs.forEach(d=>{
+      const item = document.createElement('div');
+      item.className='note-item';
+
+      item.innerHTML = `
+        <div class="note-title">${d.title}</div>
+        <div class="note-desc">${d.description || ''}</div>
+        <a class="link" href="${d.link}" target="_blank">📎 Open Link</a>
+        <div class="small" style="margin-top:5px;">Uploaded: ${new Date(d.uploadedAt.seconds * 1000).toLocaleDateString()}</div>
+      `;
+
+      notesList.appendChild(item);
+    });
+
+  } catch(err){
+    console.error(err);
+    notesList.innerHTML='<div class="small" style="width:100%;text-align:center;padding:20px;color:var(--text-muted);">Error loading notes.</div>';
+  }
+}
+
+/* ADD NOTE */
+addNoteBtn.addEventListener('click',()=>{
+  noteTitle.value='';
+  noteDesc.value='';
+  noteLink.value='';
+  addModal.style.display='flex';
+});
+cancelAdd.addEventListener('click',()=>addModal.style.display='none');
+
+confirmAdd.addEventListener('click', async ()=>{
+  const title = noteTitle.value.trim();
+  const desc = noteDesc.value.trim();
+  const link = noteLink.value.trim();
+
+  if(!link){alert('Paste link');return;}
+
+  await db.collection('NotesUploads').add({
+    campus,
+    branch,
+    semester:String(sem),
+    subject:currentSubject,
+    chapter:currentChapter,
+    title,
+    description:desc,
+    link,
+    avgRating:0,
+    ratingsCount:0,
+    uploadedAt:firebase.firestore.Timestamp.now(),
+    uploadedBy:'admin'
+  });
+
+  addModal.style.display='none';
+  openChapter(currentChapter);
+});
+</script>
+</body>
+</html>

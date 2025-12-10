@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Study Hub - Login</title>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* --- Shared Theming Variables --- */
+        :root {
+            /* Background colors for depth (Dark Theme) */
+            --bg-dark-blue: #1C274B; 
+            --bg-dark-purple: #2A1C4B; 
+            --text-light: #F9FAFB;
+
+            /* Card and Input Colors */
+            --card-bg: #FFFFFF;
+            --text-dark: #111827;
+            --input-bg: rgba(255, 255, 255, 0.95);
+
+            /* Accent Colors */
+            --accent-purple: #8B5CF6; /* Vibrant Purple */
+            --accent-blue: #3B82F6; /* Bright Blue */
+            --accent-green: #10B981; /* Emerald Green (Student Accent) */
+            --accent-admin: #0087c0; /* Darker Blue/Admin Accent */
+            
+            /* Shadows */
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-lift: 0 15px 40px rgba(0, 0, 0, 0.5);
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Body and Layout */
+        body {
+            font-family: var(--font-family);
+            /* Matching the main HUB background gradient */
+            background: linear-gradient(145deg, var(--bg-dark-blue) 0%, var(--bg-dark-purple) 100%);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Title Container - Centered Title Only */
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 15px;
+        }
+
+        /* Main Title - Light Text on Dark BG */
+        .main-title {
+            color: var(--text-light); /* White/Light text */
+            font-size: 3.5em;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -1px; /* Tighter letter spacing */
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            padding: 0 10px;
+        }
+
+        /* Main Login Container */
+        .main-container {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            max-width: 800px; /* Adjusted max-width for better two-column balance */
+            justify-content: center;
+        }
+
+        /* Login Sections (The 'Cards') */
+        .login-section {
+            flex: 1;
+            max-width: 380px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Card Hover Effect */
+        .login-section:hover {
+            transform: translateY(-8px);
+        }
+
+        /* Accent Bar at the Top */
+        .login-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px; /* Thicker bar */
+            z-index: 1;
+        }
+
+        /* Admin Section - Deep Blue/Purple Accent */
+        .login-section.admin {
+            background: linear-gradient(145deg, var(--bg-dark-blue) 0%, #1e3a5f 100%);
+            color: var(--text-light);
+            border: 1px solid var(--accent-admin);
+        }
+
+        .login-section.admin::before {
+            background: var(--accent-admin); /* Solid admin accent color */
+        }
+
+        /* Student Section - Blue/Green Accent */
+        .login-section.student {
+            background: linear-gradient(145deg, #0e7490 0%, #0084a1 100%);
+            color: var(--text-light);
+            border: 1px solid var(--accent-green);
+        }
+
+        .login-section.student::before {
+            background: var(--accent-green); /* Solid student accent color */
+        }
+
+        .login-section h3 {
+            margin: 0 0 30px 0;
+            font-size: 1.8em; /* Slightly larger title */
+            font-weight: 800;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Input Fields */
+        input {
+            width: 92%;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-dark);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        input:focus {
+            outline: 3px solid var(--accent-blue); /* Clear outline on focus */
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.4);
+            transform: scale(1.01);
+        }
+
+        /* Login Buttons */
+        .login-btn {
+            width: 94%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Button Colors (White button, text matches card accent) */
+        .login-section.admin .login-btn {
+            background: var(--card-bg);
+            color: var(--accent-admin);
+        }
+
+        .login-section.student .login-btn {
+            background: var(--card-bg);
+            color: var(--accent-green);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            filter: brightness(0.95);
+        }
+
+        /* Error Message (Styled to stand out on dark background) */
+        .error {
+            color: var(--text-light);
+            background: rgba(239, 68, 68, 0.5);
+            margin-top: 20px;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            min-height: 20px;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+                gap: 30px;
+                max-width: 450px;
+            }
+            .main-title {
+                font-size: 2.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 2.2em;
+                letter-spacing: 0;
+            }
+            .login-section {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnU8zS0ky1zzgkc1kPkZDcv7uI8s29Ngc",
+            authDomain: "ss-hub-e62c8.firebaseapp.com",
+            projectId: "ss-hub-e62c8",
+            storageBucket: "ss-hub-e62c8.firebasestorage.app",
+            messagingSenderId: "301529043206",
+            appId: "1:301529043206:web:33e140d591951a14c00e87"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+</head>
+<body>
+
+<div class="header-container">
+    <h1 class="main-title">Smart Study Hub</h1>
+</div>
+
+<div class="main-container">
+    <div class="login-section admin">
+        <h3>👨‍💼 Admin Login</h3>
+        <input type="text" id="adminId" placeholder="Admin ID">
+        <input type="password" id="adminPassword" placeholder="Password">
+        <button class="login-btn" onclick="adminLogin()">Admin Login</button>
+        <div class="error" id="adminError"></div>
+    </div>
+
+    <div class="login-section student">
+        <h3>🎓 Student Login</h3>
+        <input type="text" id="studentId" placeholder="Student ID">
+        <input type="password" id="studentPassword" placeholder="Password">
+        <button class="login-btn" onclick="studentLogin()">Student Login</button>
+        <div class="error" id="studentError"></div>
+    </div>
+</div>
+
+<script>
+async function adminLogin() {
+    await performLogin('adminId', 'adminPassword', 'adminError', 'admin');
+}
+
+async function studentLogin() {
+    await performLogin('studentId', 'studentPassword', 'studentError', 'student');
+}
+
+async function performLogin(idField, passwordField, errorId, role) {
+    const id = document.getElementById(idField).value.trim();
+    const password = document.getElementById(passwordField).value.trim();
+    const errorBox = document.getElementById(errorId);
+    
+    errorBox.textContent = "";
+    
+    if (id === "" || password === "") {
+        errorBox.textContent = "Please enter both fields.";
+        return;
+    }
+
+    try {
+        const snap = await db.collection("USERS")
+            .where("id", "==", id)
+            .where("password", "==", password)
+            .get();
+
+        if (snap.empty) {
+            errorBox.textContent = "Invalid ID or Password";
+            return;
+        }
+
+        const user = snap.docs[0].data();
+        // Check if the role matches the button pressed (optional but good practice)
+        if (user.role !== role) {
+             errorBox.textContent = "Invalid credentials for this login type.";
+             return;
+        }
+
+        localStorage.setItem("userId", user.id);
+        localStorage.setItem("role", user.role);
+
+        // Redirect everyone to blocks.html
+        window.location.href = "blocks.html";
+    } catch (err) {
+        console.error(err);
+        errorBox.textContent = "Login error. Please try again.";
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Smart Study Hub — Previous Papers</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+/* --- 🎨 Theme Variables (Consistent with other Dark Pages) --- */
+:root {
+    /* Dark Background */
+    --bg-dark-blue: #1C274B; 
+    --bg-dark-purple: #2A1C4B; 
+    
+    /* Primary UI Colors (Light for Cards) */
+    --card-bg-light: rgba(255, 255, 255, 0.9); /* Frosted glass look */
+    --primary-dark: #111827; /* Dark text for cards */
+    --text-muted: #6B7280;
+    --text-light: #F9FAFB;
+
+    /* Accent Colors (Consistent Blue/Admin Theme) */
+    --accent-admin: #0087c0; /* Main Admin/Primary Blue */
+    --accent-admin-dark: #005a8d;
+    --accent-secondary: #8B5CF6; /* Secondary accent (Purple) */
+
+    /* Subject Block Colors (New Distinct Palette) */
+    --color-1: linear-gradient(135deg, #10B981 0%, #059669 100%); /* Green */
+    --color-2: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); /* Amber */
+    --color-3: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); /* Red */
+    --color-4: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); /* Blue */
+    --color-5: linear-gradient(135deg, #9333EA 0%, #7E22CE 100%); /* Violet */
+    --color-6: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%); /* Cyan */
+
+    /* Shadows */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --shadow-lift: 0 15px 40px rgba(0, 0, 0, 0.4);
+
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    /* Dark Gradient Background */
+    background: linear-gradient(145deg, var(--bg-dark-blue) 0%, var(--bg-dark-purple) 100%);
+    margin: 0;
+    color: var(--primary-dark); /* Default text color is dark for cards */
+    min-height: 100vh;
+}
+
+/* --- HEADER --- */
+header {
+    background: var(--card-bg-light);
+    color: var(--accent-admin);
+    padding: 25px 18px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 2.2em;
+    letter-spacing: 1.5px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px);
+    margin-bottom: 25px;
+    border-radius: 0 0 20px 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto 22px auto;
+    padding: 0 18px 18px 18px;
+}
+
+/* --- CARD STYLE (Frosted Glass on Dark BG) --- */
+.card {
+    background: var(--card-bg-light);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 25px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Accent Bar */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--accent-admin), var(--accent-secondary));
+    z-index: 1;
+}
+
+.select-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.card strong {
+    font-size: 1.4em;
+    font-weight: 900;
+    color: var(--primary-dark);
+}
+
+select, input {
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9); /* Opaque white inputs */
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+    flex: 1;
+    min-width: 140px;
+    box-sizing: border-box;
+    color: var(--primary-dark);
+}
+select:focus, input:focus {
+    outline: 3px solid var(--accent-admin);
+    box-shadow: 0 0 15px rgba(0, 135, 192, 0.4);
+    transform: scale(1.01);
+}
+
+/* --- PRIMARY BUTTON (Accent Color) --- */
+button.primary {
+    background: linear-gradient(90deg, var(--accent-admin), var(--accent-admin-dark));
+    color: var(--text-light);
+    border: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transition: all 0.4s ease;
+}
+
+button.primary:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-lift);
+}
+
+/* --- SUBJECT BLOCKS --- */
+.blocks {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.subject-block {
+    min-width: 220px;
+    padding: 25px;
+    border-radius: 16px;
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    font-size: 1.1em;
+}
+
+.subject-block:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+}
+
+/* NEW: Subject Block Specific Colors */
+.subject-block:nth-child(6n + 1) { background: var(--color-1); }
+.subject-block:nth-child(6n + 2) { background: var(--color-2); }
+.subject-block:nth-child(6n + 3) { background: var(--color-3); }
+.subject-block:nth-child(6n + 4) { background: var(--color-4); }
+.subject-block:nth-child(6n + 5) { background: var(--color-5); }
+.subject-block:nth-child(6n + 6) { background: var(--color-6); }
+
+
+/* --- PAPER ITEMS --- */
+.notes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.note-item {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-width: 280px;
+    flex-grow: 1;
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--accent-admin); /* Accent strip */
+}
+
+.note-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+.note-title {
+    font-weight: 900;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: var(--primary-dark);
+}
+
+a.link {
+    color: var(--accent-admin);
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 15px;
+}
+
+a.link:hover {
+    color: var(--accent-admin-dark);
+    text-decoration: underline;
+}
+
+/* --- MODAL --- */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: var(--card-bg-light);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    position: relative;
+}
+
+.modal-card h3 {
+    margin: 0 0 20px 0;
+    color: var(--primary-dark);
+    font-size: 1.6em;
+    font-weight: 900;
+}
+
+/* Modal Inputs */
+.modal-card input {
+    padding: 14px; /* Consistent padding with other inputs */
+    border-radius: 12px;
+}
+
+/* Modal Cancel Button */
+#cancelAdd {
+    background: #eee; 
+    color: #666; 
+    border: none; 
+    padding: 12px 20px; 
+    border-radius: 12px; 
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+#cancelAdd:hover {
+    background: #ddd;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .select-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    select, input, button.primary {
+        width: 100%;
+        max-width: 400px;
+    }
+    .blocks, .notes-list {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        font-size: 1.6em;
+        letter-spacing: 1px;
+    }
+    .subject-block, .note-item {
+        min-width: 100%;
+        max-width: none;
+        width: 100%;
+    }
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<header>Smart Study Hub — Previous Papers</header>
+
+<div class="container">
+
+<div class="card">
+<div style="text-align:center;margin-bottom:12px"><strong>Select Campus • Branch • Semester</strong></div>
+<div class="select-row">
+<select id="campusSelect">
+<option value="">Campus</option>
+<option value="ACET">ACET</option>
+<option value="AUS">AUS</option>
+</select>
+<select id="branchSelect">
+<option value="">Branch</option>
+<option value="CSE">CSE</option>
+<option value="IT">IT</option>
+<option value="DS">DS</option>
+<option value="AIML">AIML</option>
+</select>
+<select id="semSelect">
+<option value="">Semester</option>
+<option>1</option><option>2</option><option>3</option><option>4</option>
+<option>5</option><option>6</option><option>7</option><option>8</option>
+</select>
+<button class="primary" id="enterBtn">Enter</button>
+</div>
+</div>
+
+<div id="mainArea" class="card" style="display:none">
+<div style="text-align:left;margin-bottom:12px;border-bottom: 2px solid #eee;padding-bottom: 5px;"><strong>Subjects Available</strong></div>
+<div class="blocks" id="subjectsBlocks"></div>
+
+<div id="papersArea" style="display:none;margin-top:30px">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<h3 id="subjectHeader" style="margin:0; color: var(--primary-dark); font-weight: 900; font-size: 1.5em;"></h3>
+<button class="primary" id="addPaperBtn">+ Add Paper</button>
+</div>
+<div class="notes-list" id="papersList"></div>
+</div>
+</div>
+
+</div>
+
+<div id="addModal" class="modal" style="display:none">
+<div class="modal-card">
+<h3>Upload Previous Paper Link</h3>
+<input id="noteTitle" placeholder="Paper Title (e.g., Nov 2024 Final Exam)" style="width:100%;margin-bottom:12px;" />
+<input id="noteLink" placeholder="Public Drive/Web Link (REQUIRED)" style="width:100%;margin-bottom:16px;" />
+<div style="display:flex;justify-content:flex-end;gap:12px">
+<button id="cancelAdd">Cancel</button>
+<button id="confirmAdd" class="primary">Save</button>
+</div>
+</div>
+</div>
+
+<script>
+const firebaseConfig={
+apiKey:"AIza...",
+authDomain:"ss-hub-e62c8.firebaseapp.com",
+projectId:"ss-hub-e62c8"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+let campus='', branch='', sem='', subjects=[], currentSubject=null;
+
+enterBtn.onclick=async()=>{
+campus=campusSelect.value;
+branch=branchSelect.value;
+sem=semSelect.value;
+if(!campus||!branch||!sem){alert("Select all fields"); return;}
+mainArea.style.display='block';
+const docId=`${campus}-${branch}-${sem}`;
+const snap=await db.collection('PreviousPapers').doc(docId).get();
+if(!snap.exists){subjectsBlocks.innerHTML='No subjects found for this selection.'; return;}
+subjects=snap.data().subjects||[];
+renderSubjects();
+};
+
+function renderSubjects(){
+papersArea.style.display='none'; // Hide papers list when subjects change
+subjectsBlocks.innerHTML='';
+subjects.forEach((s,idx)=>{
+const b=document.createElement('div');
+b.className='subject-block';
+b.textContent=s.name;
+b.onclick=()=>openSubject(idx);
+subjectsBlocks.appendChild(b);
+});
+}
+
+function openSubject(i){
+currentSubject=subjects[i].name;
+subjectHeader.textContent=`Papers for: ${currentSubject}`;
+papersArea.style.display='block';
+loadNotes();
+}
+
+async function loadNotes(){
+papersList.innerHTML='<div style="color:var(--text-muted); padding:20px;">Loading papers...</div>';
+const snap=await db.collection('QuestionPapers')
+.where('campus','==',campus)
+.where('branch','==',branch)
+.where('semester','==',sem)
+.where('subject','==',currentSubject)
+.get();
+papersList.innerHTML='';
+if(snap.empty){papersList.innerHTML='<div style="color:var(--text-muted); padding:20px;">No previous papers uploaded yet for this subject.</div>'; return;}
+snap.forEach(d=>{
+const data=d.data();
+const item=document.createElement('div');
+item.className='note-item';
+item.innerHTML=`<div class="note-title">${data.title}</div>
+<a class="link" href="${data.link}" target="_blank">📎 Open Paper Link</a>`;
+papersList.appendChild(item);
+});
+}
+
+addPaperBtn.onclick=()=>{addModal.style.display='flex';};
+cancelAdd.onclick=()=>addModal.style.display='none';
+confirmAdd.onclick=async()=>{
+const title=noteTitle.value.trim();
+const link=noteLink.value.trim();
+if(!title||!link){alert('Enter both title and the public link.'); return;}
+await db.collection('QuestionPapers').add({
+campus, branch, semester:sem, subject:currentSubject,
+title, link, uploadedAt:firebase.firestore.Timestamp.now()
+});
+addModal.style.display='none';
+noteTitle.value=''; noteLink.value='';
+loadNotes();
+};
+</script>
+
+</body>
+</html>
